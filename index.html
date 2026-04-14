@@ -1,52 +1,1809 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Todo Aire</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo Aire — Instalación de Aire Acondicionado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ===== CSS VARIABLES ===== */
+  :root {
+    --navy: #1B2A6B;
+    --navy-dark: #121d4a;
+    --navy-light: #243580;
+    --orange: #E8922A;
+    --orange-dark: #d07a1a;
+    --orange-light: #f5a94a;
+    --white: #ffffff;
+    --gray-50: #f8f9fc;
+    --gray-100: #f0f2f8;
+    --gray-200: #e2e6f0;
+    --gray-400: #9aa3bf;
+    --gray-600: #5a6380;
+    --gray-800: #2d3452;
+    --text: #1a2040;
+    --radius: 16px;
+    --radius-sm: 8px;
+    --radius-lg: 24px;
+    --shadow: 0 4px 20px rgba(27,42,107,0.08);
+    --shadow-md: 0 8px 32px rgba(27,42,107,0.12);
+    --shadow-lg: 0 16px 48px rgba(27,42,107,0.16);
+    --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+  img { max-width: 100%; display: block; }
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+  .reveal-delay-6 { transition-delay: 0.6s; }
+
+  /* ===== NAVBAR ===== */
+  #navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 20px 0;
+    transition: all var(--transition);
+    background: transparent;
+  }
+  #navbar.scrolled {
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(27,42,107,0.1);
+    padding: 12px 0;
+  }
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nav-logo img {
+    height: 44px;
+    width: auto;
+    transition: height var(--transition);
+  }
+  #navbar.scrolled .nav-logo img { height: 36px; }
+  .nav-logo-text {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    transition: color var(--transition);
+  }
+  #navbar.scrolled .nav-logo-text { color: var(--navy); }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-links a {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition);
+  }
+  #navbar.scrolled .nav-links a { color: var(--gray-800); }
+  .nav-links a:hover {
+    color: var(--orange);
+    background: rgba(232,146,42,0.08);
+  }
+  .nav-cta {
+    background: var(--orange) !important;
+    color: var(--white) !important;
+    padding: 10px 20px !important;
+    border-radius: var(--radius-sm) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+  }
+  .nav-cta:hover {
+    background: var(--orange-dark) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(232,146,42,0.4);
+  }
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    background: none;
+    border: none;
+    z-index: 1001;
+  }
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--white);
+    border-radius: 2px;
+    transition: all var(--transition);
+  }
+  #navbar.scrolled .hamburger span { background: var(--navy); }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--navy);
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .mobile-menu.open {
+    display: flex;
+    opacity: 1;
+  }
+  .mobile-menu a {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    transition: all var(--transition);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+  .mobile-menu a:hover { background: rgba(255,255,255,0.1); color: var(--orange); }
+  .mobile-menu .mobile-cta {
+    background: var(--orange);
+    margin-top: 16px;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    border: 2px solid transparent;
+    min-height: 48px;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: scale(1.03); }
+  .btn-whatsapp {
+    background: #25D366;
+    color: var(--white);
+    box-shadow: 0 4px 16px rgba(37,211,102,0.3);
+  }
+  .btn-whatsapp:hover {
+    background: #1db954;
+    box-shadow: 0 6px 20px rgba(37,211,102,0.45);
+  }
+  .btn-email {
+    background: transparent;
+    color: var(--white);
+    border-color: rgba(255,255,255,0.6);
+  }
+  .btn-email:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: var(--white);
+  }
+  .btn-primary {
+    background: var(--orange);
+    color: var(--white);
+    box-shadow: 0 4px 16px rgba(232,146,42,0.35);
+  }
+  .btn-primary:hover {
+    background: var(--orange-dark);
+    box-shadow: 0 6px 24px rgba(232,146,42,0.5);
+  }
+
+  /* ===== SECTION BASE ===== */
+  section { padding: 96px 0; }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .section-label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--orange);
+    background: rgba(232,146,42,0.1);
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+  }
+  .section-subtitle {
+    font-size: 17px;
+    color: var(--gray-600);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+  .section-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+  .section-header .section-subtitle { margin: 0 auto; }
+
+  /* ===== HERO ===== */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 0;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.05);
+    transition: transform 8s ease;
+  }
+  .hero-bg.loaded { transform: scale(1); }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(18,29,74,0.88) 0%, rgba(27,42,107,0.75) 50%, rgba(18,29,74,0.6) 100%);
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 24px 80px;
+    width: 100%;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,146,42,0.2);
+    border: 1px solid rgba(232,146,42,0.4);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--orange-light);
+    margin-bottom: 28px;
+    backdrop-filter: blur(8px);
+  }
+  .hero-title {
+    font-size: clamp(36px, 5.5vw, 68px);
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+    max-width: 780px;
+  }
+  .hero-title span { color: var(--orange-light); }
+  .hero-subtitle {
+    font-size: clamp(16px, 2vw, 19px);
+    color: rgba(255,255,255,0.8);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 44px;
+    font-weight: 400;
+  }
+  .hero-buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .hero-scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+  @keyframes scrollLine {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(0.6); }
+  }
+
+  /* ===== SERVICIOS ===== */
+  #servicios { background: var(--gray-50); }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .service-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-100);
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--navy), var(--orange));
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--gray-200);
+  }
+  .service-card:hover::before { opacity: 1; }
+  .service-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, rgba(27,42,107,0.08), rgba(232,146,42,0.08));
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .service-icon svg { width: 28px; height: 28px; }
+  .service-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .service-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+  }
+
+  /* ===== STATS ===== */
+  #stats {
+    background: var(--navy);
+    padding: 72px 0;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .stat-item {
+    text-align: center;
+    padding: 40px 24px;
+    position: relative;
+  }
+  .stat-item::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 20%; bottom: 20%;
+    width: 1px;
+    background: rgba(255,255,255,0.1);
+  }
+  .stat-item:last-child::after { display: none; }
+  .stat-number {
+    font-size: clamp(42px, 5vw, 60px);
+    font-weight: 900;
+    color: var(--orange);
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .stat-label {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* ===== PROCESO ===== */
+  #proceso { background: var(--white); }
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+    margin-top: 16px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 36px;
+    left: calc(12.5% + 12px);
+    right: calc(12.5% + 12px);
+    height: 2px;
+    background: linear-gradient(90deg, var(--navy), var(--orange));
+    z-index: 0;
+  }
+  .timeline-step {
+    text-align: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .step-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 3px solid var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--navy);
+    position: relative;
+    transition: all var(--transition);
+    box-shadow: 0 0 0 6px var(--white);
+  }
+  .timeline-step:nth-child(2) .step-circle { border-color: var(--navy-light); }
+  .timeline-step:nth-child(3) .step-circle { border-color: var(--orange-dark); }
+  .timeline-step:nth-child(4) .step-circle { border-color: var(--orange); background: var(--orange); color: var(--white); }
+  .step-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .step-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+  }
+
+  /* ===== CLIENTES (CARRUSEL) ===== */
+  #clientes { background: var(--gray-50); padding: 72px 0; }
+  .carousel-wrapper {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 15%, black 85%, transparent);
+  }
+  .carousel-track {
+    display: flex;
+    gap: 16px;
+    animation: carousel 28s linear infinite;
+    width: max-content;
+  }
+  .carousel-track:hover { animation-play-state: paused; }
+  @keyframes carousel {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .client-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    padding: 14px 22px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-800);
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+    transition: all var(--transition);
+    min-height: 48px;
+  }
+  .client-pill:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .client-pill svg { width: 18px; height: 18px; color: var(--orange); flex-shrink: 0; }
+
+  /* ===== TESTIMONIOS ===== */
+  #testimonios { background: var(--white); }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .testimonial-card {
+    background: var(--gray-50);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    border: 1px solid var(--gray-100);
+    transition: all var(--transition);
+    position: relative;
+  }
+  .testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: 20px; right: 28px;
+    font-size: 80px;
+    color: var(--gray-200);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+  .testimonial-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    background: var(--white);
+  }
+  .stars {
+    color: #FBBF24;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+  .testimonial-text {
+    font-size: 15px;
+    color: var(--gray-600);
+    line-height: 1.75;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .author-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy), var(--orange));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .author-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .author-role {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  /* ===== CTA FINAL ===== */
+  #contacto {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 40%, #2a3d8a 100%);
+    padding: 96px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  #contacto::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,146,42,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  #contacto::after {
+    content: '';
+    position: absolute;
+    bottom: -30%; left: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-content {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .cta-title {
+    font-size: clamp(32px, 4.5vw, 52px);
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+    line-height: 1.15;
+  }
+  .cta-subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 48px;
+  }
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 56px;
+  }
+  .cta-info {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .cta-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .cta-info-item svg { width: 18px; height: 18px; color: var(--orange); flex-shrink: 0; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--navy-dark);
+    color: rgba(255,255,255,0.6);
+    padding: 64px 0 32px;
+    font-size: 14px;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 48px;
+    margin-bottom: 48px;
+  }
+  .footer-brand { }
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .footer-logo img { height: 36px; width: auto; }
+  .footer-logo-text {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--white);
+  }
+  .footer-desc {
+    line-height: 1.7;
+    margin-bottom: 24px;
+    max-width: 280px;
+  }
+  .social-links {
+    display: flex;
+    gap: 10px;
+  }
+  .social-link {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .social-link:hover {
+    background: var(--orange);
+    transform: translateY(-2px);
+  }
+  .social-link svg { width: 18px; height: 18px; }
+  .footer-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+  .footer-links { display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a {
+    color: rgba(255,255,255,0.6);
+    transition: color var(--transition);
+    display: inline-block;
+    min-height: 28px;
+    line-height: 28px;
+  }
+  .footer-links a:hover { color: var(--orange); }
+  .footer-contact { display: flex; flex-direction: column; gap: 12px; }
+  .footer-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+  .footer-contact-item svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; color: var(--orange); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+  }
+  .footer-admin-link {
+    color: rgba(255,255,255,0.2);
+    font-size: 11px;
+    cursor: pointer;
+    transition: color var(--transition);
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+  .footer-admin-link:hover { color: rgba(255,255,255,0.5); }
+
+  /* ===== ADMIN PANEL ===== */
+  #admin-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+  }
+  #admin-overlay.open { display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 20px; }
+  #admin-panel {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 860px;
+    min-height: 200px;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    margin: auto;
+    animation: adminIn 0.3s ease;
+  }
+  @keyframes adminIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .admin-header {
+    background: var(--navy);
+    padding: 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .admin-header h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--white);
+  }
+  .admin-close {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: var(--white);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+  .admin-close:hover { background: rgba(255,255,255,0.25); }
+  #admin-login {
+    padding: 48px 32px;
+    text-align: center;
+  }
+  #admin-login h3 { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  #admin-login p { color: var(--gray-600); font-size: 14px; margin-bottom: 28px; }
+  .admin-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: all var(--transition);
+    max-width: 320px;
+    display: block;
+    margin: 0 auto 16px;
+    letter-spacing: 3px;
+  }
+  .admin-input:focus { border-color: var(--navy); }
+  .admin-error { color: #e53e3e; font-size: 13px; margin-bottom: 12px; display: none; }
+  #admin-content { display: none; }
+  #admin-content.visible { display: block; }
+  .admin-tabs {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 32px;
+    border-bottom: 1px solid var(--gray-100);
+    background: var(--gray-50);
+    gap: 4px;
+  }
+  .admin-tab {
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+    min-height: 44px;
+  }
+  .admin-tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+  .admin-body {
+    padding: 32px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .admin-section { display: none; }
+  .admin-section.active { display: block; }
+  .admin-field { margin-bottom: 20px; }
+  .admin-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 6px;
+  }
+  .admin-field input, .admin-field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color var(--transition);
+    background: var(--white);
+  }
+  .admin-field input:focus, .admin-field textarea:focus { border-color: var(--navy); }
+  .admin-field textarea { resize: vertical; min-height: 80px; }
+  .admin-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .admin-item {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .admin-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .admin-item-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .admin-remove-btn {
+    background: #fee2e2;
+    border: none;
+    color: #e53e3e;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+  .admin-remove-btn:hover { background: #fecaca; }
+  .admin-add-btn {
+    background: var(--gray-100);
+    border: 1.5px dashed var(--gray-400);
+    color: var(--gray-600);
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition);
+    margin-top: 8px;
+    min-height: 44px;
+  }
+  .admin-add-btn:hover { background: var(--gray-200); color: var(--navy); }
+  .admin-footer {
+    padding: 20px 32px;
+    border-top: 1px solid var(--gray-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: var(--gray-50);
+  }
+  .admin-save-btn {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 12px 28px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition);
+    min-height: 44px;
+  }
+  .admin-save-btn:hover { background: var(--navy-dark); transform: translateY(-1px); }
+  .admin-reset-btn {
+    background: none;
+    border: 1.5px solid var(--gray-200);
+    color: var(--gray-600);
+    padding: 12px 24px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all var(--transition);
+    min-height: 44px;
+  }
+  .admin-reset-btn:hover { border-color: #e53e3e; color: #e53e3e; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid .stat-item:nth-child(2)::after { display: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  }
+  @media (max-width: 768px) {
+    .nav-links, .nav-cta { display: none !important; }
+    .hamburger { display: flex; }
+    section { padding: 72px 0; }
+    .services-grid { grid-template-columns: 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .timeline {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .timeline::before { display: none; }
+    .timeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      text-align: left;
+      padding: 0 0 36px;
+      position: relative;
+    }
+    .timeline-step::before {
+      content: '';
+      position: absolute;
+      left: 35px; top: 72px;
+      bottom: 0;
+      width: 2px;
+      background: var(--gray-100);
+      z-index: 0;
+    }
+    .timeline-step:last-child::before { display: none; }
+    .step-circle { margin: 0; flex-shrink: 0; width: 72px; height: 72px; }
+    .step-content { flex: 1; padding-top: 14px; }
+    .hero-buttons { flex-direction: column; align-items: flex-start; }
+    .hero-buttons .btn { width: 100%; max-width: 320px; justify-content: center; }
+    .cta-info { flex-direction: column; align-items: center; gap: 16px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-item::after { display: none; }
+    .admin-grid-2 { grid-template-columns: 1fr; }
+    .admin-body { max-height: 50vh; }
+  }
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+    .cta-buttons .btn { width: 100%; max-width: 320px; justify-content: center; }
+  }
+</style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Todo Aire</h1>
-        <nav>
-            <ul>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#stats">Stats</a></li>
-                <li><a href="#timeline">Timeline</a></li>
-                <li><a href="#testimonials">Testimonials</a></li>
-                <li><a href="#admin-panel">Admin Panel</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <section id="services">
-        <h2>Our Services</h2>
-        <p>Details about the services offered by Todo Aire.</p>
-    </section>
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <div class="nav-container">
+    <a href="#" class="nav-logo">
+      <img src="logo.png" alt="Todo Aire" onerror="this.style.display='none'">
+      <span class="nav-logo-text">Todo Aire</span>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#por-que">Por qué elegirnos</a></li>
+      <li><a href="#proceso">Cómo trabajamos</a></li>
+      <li><a href="#clientes">Clientes</a></li>
+      <li><a href="#contacto" class="nav-cta">Pedir presupuesto</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-    <section id="stats">
-        <h2>Stats</h2>
-        <p>Some impressive statistics about Todo Aire.</p>
-    </section>
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#servicios" onclick="closeMobileMenu()">Servicios</a>
+  <a href="#por-que" onclick="closeMobileMenu()">Por qué elegirnos</a>
+  <a href="#proceso" onclick="closeMobileMenu()">Cómo trabajamos</a>
+  <a href="#clientes" onclick="closeMobileMenu()">Clientes</a>
+  <a href="#contacto" class="mobile-cta" onclick="closeMobileMenu()">Pedir presupuesto</a>
+</div>
 
-    <section id="timeline">
-        <h2>Timeline</h2>
-        <p>A timeline of our accomplishments.</p>
-    </section>
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge reveal">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Servicio profesional certificado
+    </div>
+    <h1 class="hero-title reveal reveal-delay-1">
+      Instalamos el confort<br>que tu hogar <span>merece</span>
+    </h1>
+    <p class="hero-subtitle reveal reveal-delay-2">
+      Instalación, mantenimiento y reparación de aire acondicionado. Servicio rápido, garantizado y en todo el día.
+    </p>
+    <div class="hero-buttons reveal reveal-delay-3">
+      <a href="https://wa.me/59899000000" target="_blank" class="btn btn-whatsapp" id="btn-hero-wa">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Escribinos por WhatsApp
+      </a>
+      <a href="mailto:contacto@todoaire.com.uy" class="btn btn-email" id="btn-hero-email">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Envianos un correo
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
 
-    <section id="testimonials">
-        <h2>What Our Clients Say</h2>
-        <p>Testimonials from our satisfied clients.</p>
-    </section>
+<!-- ===== SERVICIOS ===== -->
+<section id="servicios">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">Nuestros servicios</span>
+      <h2 class="section-title reveal reveal-delay-1">Todo lo que necesitás,<br>en un solo lugar</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Soluciones completas de climatización para hogares y empresas con la mejor calidad y garantía.</p>
+    </div>
+    <div class="services-grid" id="services-grid">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</section>
 
-    <section id="admin-panel">
-        <h2>Admin Panel</h2>
-        <p>Access to the admin panel here.</p>
-    </section>
+<!-- ===== STATS ===== -->
+<section id="por-que">
+  <div class="stats-grid" id="stats-grid">
+    <!-- Filled by JS -->
+  </div>
+</section>
 
-    <footer>
-        <p>&copy; 2026 Todo Aire. All rights reserved.</p>
-    </footer>
+<!-- ===== PROCESO ===== -->
+<section id="proceso">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">Nuestro proceso</span>
+      <h2 class="section-title reveal reveal-delay-1">Cómo trabajamos</h2>
+      <p class="section-subtitle reveal reveal-delay-2">Un proceso simple, transparente y sin sorpresas.</p>
+    </div>
+    <div class="timeline" id="timeline">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== CLIENTES ===== -->
+<section id="clientes">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">Empresas que confían en nosotros</span>
+      <h2 class="section-title reveal reveal-delay-1">Más de 500 clientes satisfechos</h2>
+    </div>
+  </div>
+  <div class="carousel-wrapper">
+    <div class="carousel-track" id="carousel-track">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIOS ===== -->
+<section id="testimonios">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label reveal">Testimonios</span>
+      <h2 class="section-title reveal reveal-delay-1">Lo que dicen nuestros clientes</h2>
+    </div>
+    <div class="testimonials-grid" id="testimonials-grid">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA CONTACTO ===== -->
+<section id="contacto">
+  <div class="container">
+    <div class="cta-content">
+      <span class="section-label reveal" style="background:rgba(232,146,42,0.2);color:var(--orange-light);">Presupuesto sin cargo</span>
+      <h2 class="cta-title reveal reveal-delay-1" id="cta-title">¿Listo para instalar tu equipo?</h2>
+      <p class="cta-subtitle reveal reveal-delay-2" id="cta-subtitle">Pedí tu presupuesto sin cargo hoy mismo.</p>
+      <div class="cta-buttons reveal reveal-delay-3">
+        <a href="https://wa.me/59899000000" target="_blank" class="btn btn-whatsapp" id="btn-cta-wa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          Escribinos por WhatsApp
+        </a>
+        <a href="mailto:contacto@todoaire.com.uy" class="btn btn-email" id="btn-cta-email">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          Envianos un correo
+        </a>
+      </div>
+      <div class="cta-info reveal reveal-delay-4">
+        <div class="cta-info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.72 10.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012.48 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.14 6.14l1.28-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          <span id="cta-phone">+598 99 000 000</span>
+        </div>
+        <div class="cta-info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+          <span id="cta-email-text">contacto@todoaire.com.uy</span>
+        </div>
+        <div class="cta-info-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="cta-zona">Montevideo y área metropolitana</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="logo.png" alt="Todo Aire" onerror="this.style.display='none'">
+          <span class="footer-logo-text">Todo Aire</span>
+        </div>
+        <p class="footer-desc" id="footer-desc">Instalación, mantenimiento y reparación de equipos de aire acondicionado en Montevideo y área metropolitana.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Instagram" id="footer-instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Facebook" id="footer-facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-title">Navegación</h4>
+        <ul class="footer-links">
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#por-que">Por qué elegirnos</a></li>
+          <li><a href="#proceso">Cómo trabajamos</a></li>
+          <li><a href="#clientes">Clientes</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Servicios</h4>
+        <ul class="footer-links">
+          <li><a href="#servicios">Instalación de splits</a></li>
+          <li><a href="#servicios">Mantenimiento</a></li>
+          <li><a href="#servicios">Reparación</a></li>
+          <li><a href="#servicios">Carga de gas</a></li>
+          <li><a href="#servicios">Instalación comercial</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Contacto</h4>
+        <div class="footer-contact">
+          <div class="footer-contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.72 10.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012.48 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.14 6.14l1.28-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            <span id="footer-phone">+598 99 000 000</span>
+          </div>
+          <div class="footer-contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+            <span id="footer-email">contacto@todoaire.com.uy</span>
+          </div>
+          <div class="footer-contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="footer-zona">Montevideo y área metropolitana</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span id="footer-copyright">© 2025 Todo Aire. Todos los derechos reservados.</span>
+      <button class="footer-admin-link" onclick="openAdmin()">Admin</button>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div id="admin-overlay">
+  <div id="admin-panel">
+    <div class="admin-header">
+      <h2>⚙️ Panel de Administración</h2>
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+    </div>
+    <div id="admin-login">
+      <h3>Acceso restringido</h3>
+      <p>Ingresá la contraseña para acceder al panel</p>
+      <input type="password" class="admin-input" id="admin-password" placeholder="Contraseña" onkeydown="if(event.key==='Enter') checkAdminPassword()">
+      <p class="admin-error" id="admin-error">Contraseña incorrecta. Intenta de nuevo.</p>
+      <button class="btn btn-primary" onclick="checkAdminPassword()" style="margin:0 auto; display:flex; justify-content:center; max-width:200px;">Ingresar</button>
+    </div>
+    <div id="admin-content">
+      <div class="admin-tabs" id="admin-tabs"></div>
+      <div class="admin-body" id="admin-body"></div>
+      <div class="admin-footer">
+        <button class="admin-reset-btn" onclick="resetToDefaults()">Restaurar valores por defecto</button>
+        <button class="admin-save-btn" onclick="saveAdminData()">💾 Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DEFAULT DATA =====
+const DEFAULT_DATA = {
+  general: {
+    empresa: 'Todo Aire',
+    whatsapp: '59899000000',
+    email: 'contacto@todoaire.com.uy',
+    zona: 'Montevideo y área metropolitana',
+    phone: '+598 99 000 000'
+  },
+  hero: {
+    tagline: 'Instalamos el confort que tu hogar merece',
+    subtitulo: 'Instalación, mantenimiento y reparación de aire acondicionado. Servicio rápido, garantizado y en todo el día.',
+    btnWaText: 'Escribinos por WhatsApp',
+    btnEmailText: 'Envianos un correo'
+  },
+  servicios: [
+    { titulo: 'Instalación de splits', descripcion: 'Instalamos tu equipo el mismo día con materiales de primera calidad y mano de obra certificada.', icono: 'split' },
+    { titulo: 'Mantenimiento preventivo', descripcion: 'Limpieza profunda y revisión técnica para que tu equipo funcione al máximo de eficiencia.', icono: 'maintenance' },
+    { titulo: 'Reparación de equipos', descripcion: 'Diagnóstico en el día y reparación de cualquier falla, con repuestos originales.', icono: 'repair' },
+    { titulo: 'Carga de gas', descripcion: 'Recarga de gas refrigerante R32 y R410A con equipos de medición profesional.', icono: 'gas' },
+    { titulo: 'Instalación comercial', descripcion: 'Equipos centrales, multisplit y VRF para oficinas, locales y edificios.', icono: 'commercial' },
+    { titulo: 'Asesoramiento técnico', descripcion: 'Te ayudamos a elegir el equipo ideal según el tamaño y uso de tu espacio.', icono: 'advice' }
+  ],
+  stats: [
+    { numero: '500+', label: 'instalaciones realizadas' },
+    { numero: '8', label: 'años de experiencia' },
+    { numero: '24hs', label: 'servicio de urgencias' },
+    { numero: '100%', label: 'garantía en mano de obra' }
+  ],
+  pasos: [
+    { titulo: 'Contacto', descripcion: 'Escribinos por WhatsApp o email y contanos qué necesitás.' },
+    { titulo: 'Visita técnica', descripcion: 'Coordinamos una visita sin costo para evaluar el espacio y darte el mejor presupuesto.' },
+    { titulo: 'Instalación', descripcion: 'Nuestro equipo trabaja de forma prolija y eficiente, el mismo día acordado.' },
+    { titulo: 'Garantía', descripcion: 'Te entregamos garantía escrita por la instalación y seguimiento post-servicio.' }
+  ],
+  clientes: ['Inmobiliaria Horizonte', 'Hotel Maravillas', 'Clínica del Sur', 'Edificio Torres del Parque', 'Supermercado El Roble', 'Constructora Vértice', 'Restaurante La Terraza', 'Oficinas Cowork Central'],
+  testimonios: [
+    { nombre: 'Laura M.', cargo: 'Propietaria de apartamento', texto: 'Instalaron el split en menos de 3 horas, todo prolijo y sin ensuciar nada. 100% recomendados.', estrellas: 5 },
+    { nombre: 'Carlos R.', cargo: 'Gerente de local comercial', texto: 'Excelente servicio, vinieron el mismo día y resolvieron el problema en el momento. Precio justo.', estrellas: 5 },
+    { nombre: 'Ana P.', cargo: 'Administradora de edificio', texto: 'Llevamos 3 años trabajando con Todo Aire para el mantenimiento de todos los equipos del edificio. Siempre puntuales y profesionales.', estrellas: 5 }
+  ],
+  footer: {
+    desc: 'Instalación, mantenimiento y reparación de equipos de aire acondicionado en Montevideo y área metropolitana.',
+    instagram: '#',
+    facebook: '#',
+    copyright: '© 2025 Todo Aire. Todos los derechos reservados.'
+  }
+};
+
+// SVG ICONS
+const ICONS = {
+  split: `<svg viewBox="0 0 24 24" fill="none" stroke="#1B2A6B" stroke-width="2"><rect x="3" y="3" width="18" height="8" rx="2"/><path d="M7 11v3m4-3v3m4-3v3M3 17h18"/><rect x="7" y="17" width="10" height="4" rx="1"/></svg>`,
+  maintenance: `<svg viewBox="0 0 24 24" fill="none" stroke="#1B2A6B" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>`,
+  repair: `<svg viewBox="0 0 24 24" fill="none" stroke="#E8922A" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>`,
+  gas: `<svg viewBox="0 0 24 24" fill="none" stroke="#1B2A6B" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  commercial: `<svg viewBox="0 0 24 24" fill="none" stroke="#E8922A" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  advice: `<svg viewBox="0 0 24 24" fill="none" stroke="#1B2A6B" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`
+};
+
+// ===== DATA STATE =====
+let DATA = {};
+function loadData() {
+  try {
+    const saved = localStorage.getItem('todoaire_data');
+    DATA = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+  } catch(e) {
+    DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+}
+function saveData(d) {
+  localStorage.setItem('todoaire_data', JSON.stringify(d));
+}
+
+// ===== RENDER FUNCTIONS =====
+function renderPage() {
+  renderServices();
+  renderStats();
+  renderTimeline();
+  renderCarousel();
+  renderTestimonials();
+  updateStaticContent();
+}
+
+function updateStaticContent() {
+  const g = DATA.general;
+  const h = DATA.hero;
+  const f = DATA.footer;
+  // Hero
+  document.querySelector('.hero-title').innerHTML = h.tagline.replace(/(merece|confort)/gi, '<span>$1</span>');
+  document.querySelector('.hero-subtitle').textContent = h.subtitulo;
+  const btnHeroWa = document.getElementById('btn-hero-wa');
+  if(btnHeroWa) { btnHeroWa.href = 'https://wa.me/' + g.whatsapp; btnHeroWa.childNodes[btnHeroWa.childNodes.length-1].textContent = ' ' + h.btnWaText; }
+  const btnHeroEmail = document.getElementById('btn-hero-email');
+  if(btnHeroEmail) { btnHeroEmail.href = 'mailto:' + g.email; btnHeroEmail.childNodes[btnHeroEmail.childNodes.length-1].textContent = ' ' + h.btnEmailText; }
+  // CTA
+  const ctaTitle = document.getElementById('cta-title');
+  if(ctaTitle) ctaTitle.textContent = '¿Listo para instalar tu equipo?';
+  const ctaSubtitle = document.getElementById('cta-subtitle');
+  if(ctaSubtitle) ctaSubtitle.textContent = 'Pedí tu presupuesto sin cargo hoy mismo.';
+  const btnCtaWa = document.getElementById('btn-cta-wa');
+  if(btnCtaWa) { btnCtaWa.href = 'https://wa.me/' + g.whatsapp; }
+  const btnCtaEmail = document.getElementById('btn-cta-email');
+  if(btnCtaEmail) { btnCtaEmail.href = 'mailto:' + g.email; }
+  const ctaPhone = document.getElementById('cta-phone');
+  if(ctaPhone) ctaPhone.textContent = g.phone;
+  const ctaEmailText = document.getElementById('cta-email-text');
+  if(ctaEmailText) ctaEmailText.textContent = g.email;
+  const ctaZona = document.getElementById('cta-zona');
+  if(ctaZona) ctaZona.textContent = g.zona;
+  // Footer
+  const fDesc = document.getElementById('footer-desc');
+  if(fDesc) fDesc.textContent = f.desc;
+  const fPhone = document.getElementById('footer-phone');
+  if(fPhone) fPhone.textContent = g.phone;
+  const fEmail = document.getElementById('footer-email');
+  if(fEmail) fEmail.textContent = g.email;
+  const fZona = document.getElementById('footer-zona');
+  if(fZona) fZona.textContent = g.zona;
+  const fInsta = document.getElementById('footer-instagram');
+  if(fInsta) fInsta.href = f.instagram;
+  const fFb = document.getElementById('footer-facebook');
+  if(fFb) fFb.href = f.facebook;
+  const fCopy = document.getElementById('footer-copyright');
+  if(fCopy) fCopy.textContent = f.copyright;
+}
+
+function renderServices() {
+  const grid = document.getElementById('services-grid');
+  if(!grid) return;
+  grid.innerHTML = DATA.servicios.map((s, i) => `
+    <div class="service-card reveal reveal-delay-${(i%3)+1}">
+      <div class="service-icon">${ICONS[s.icono] || ICONS.advice}</div>
+      <h3 class="service-title">${s.titulo}</h3>
+      <p class="service-desc">${s.descripcion}</p>
+    </div>
+  `).join('');
+  initReveal();
+}
+
+function renderStats() {
+  const grid = document.getElementById('stats-grid');
+  if(!grid) return;
+  grid.innerHTML = DATA.stats.map((s, i) => `
+    <div class="stat-item reveal reveal-delay-${i+1}">
+      <div class="stat-number">${s.numero}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>
+  `).join('');
+  initReveal();
+}
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  if(!tl) return;
+  tl.innerHTML = DATA.pasos.map((p, i) => `
+    <div class="timeline-step reveal reveal-delay-${i+1}">
+      <div class="step-circle">${i+1}</div>
+      <div class="step-content">
+        <h3 class="step-title">Paso ${i+1} — ${p.titulo}</h3>
+        <p class="step-desc">${p.descripcion}</p>
+      </div>
+    </div>
+  `).join('');
+  initReveal();
+}
+
+function renderCarousel() {
+  const track = document.getElementById('carousel-track');
+  if(!track) return;
+  const buildingIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+  const pills = [...DATA.clientes, ...DATA.clientes].map(c => `
+    <div class="client-pill">${buildingIcon}${c}</div>
+  `).join('');
+  track.innerHTML = pills;
+}
+
+function renderTestimonials() {
+  const grid = document.getElementById('testimonials-grid');
+  if(!grid) return;
+  grid.innerHTML = DATA.testimonios.map((t, i) => `
+    <div class="testimonial-card reveal reveal-delay-${i+1}">
+      <div class="stars">${'★'.repeat(t.estrellas)}${'☆'.repeat(5-t.estrellas)}</div>
+      <p class="testimonial-text">"${t.texto}"</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">${t.nombre[0]}</div>
+        <div>
+          <div class="author-name">${t.nombre}</div>
+          <div class="author-role">${t.cargo}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  initReveal();
+}
+
+// ===== NAVBAR =====
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  if(window.scrollY > 60) navbar.classList.add('scrolled');
+  else navbar.classList.remove('scrolled');
+}, { passive: true });
+
+// ===== HAMBURGER =====
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  if(mobileMenu.classList.contains('open')) {
+    mobileMenu.style.opacity = '0';
+    setTimeout(() => { mobileMenu.classList.remove('open'); mobileMenu.style.display = 'none'; }, 300);
+  } else {
+    mobileMenu.style.display = 'flex';
+    setTimeout(() => { mobileMenu.classList.add('open'); mobileMenu.style.opacity = '1'; }, 10);
+  }
+});
+function closeMobileMenu() {
+  hamburger.classList.remove('open');
+  mobileMenu.style.opacity = '0';
+  setTimeout(() => { mobileMenu.classList.remove('open'); mobileMenu.style.display = 'none'; }, 300);
+}
+
+// ===== SCROLL REVEAL =====
+let revealObserver;
+function initReveal() {
+  if(revealObserver) revealObserver.disconnect();
+  revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => {
+    el.classList.remove('visible');
+    revealObserver.observe(el);
+  });
+}
+
+// ===== HERO BG =====
+const heroBg = document.getElementById('hero-bg');
+if(heroBg) setTimeout(() => heroBg.classList.add('loaded'), 100);
+
+// ===== ADMIN PANEL =====
+function openAdmin() {
+  document.getElementById('admin-overlay').classList.add('open');
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-content').classList.remove('visible');
+  document.getElementById('admin-error').style.display = 'none';
+  document.getElementById('admin-password').value = '';
+}
+function closeAdmin() {
+  document.getElementById('admin-overlay').classList.remove('open');
+}
+document.getElementById('admin-overlay').addEventListener('click', function(e) {
+  if(e.target === this) closeAdmin();
+});
+function checkAdminPassword() {
+  const pw = document.getElementById('admin-password').value;
+  if(pw === 'todoaire2025') {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-content').classList.add('visible');
+    renderAdminPanel();
+  } else {
+    document.getElementById('admin-error').style.display = 'block';
+  }
+}
+
+const ADMIN_TABS = [
+  { id: 'general', label: 'General' },
+  { id: 'hero', label: 'Hero' },
+  { id: 'servicios', label: 'Servicios' },
+  { id: 'stats', label: 'Stats' },
+  { id: 'pasos', label: 'Pasos' },
+  { id: 'clientes', label: 'Clientes' },
+  { id: 'testimonios', label: 'Testimonios' },
+  { id: 'footer', label: 'Footer' }
+];
+
+let activeTab = 'general';
+
+function renderAdminPanel() {
+  const tabsEl = document.getElementById('admin-tabs');
+  tabsEl.innerHTML = ADMIN_TABS.map(t => `
+    <button class="admin-tab ${t.id === activeTab ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</button>
+  `).join('');
+  renderAdminSection();
+}
+
+function switchTab(id) {
+  activeTab = id;
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase() === id || t.onclick.toString().includes(`'${id}'`)));
+  document.getElementById('admin-tabs').querySelectorAll('.admin-tab').forEach(t => {
+    t.classList.remove('active');
+    if(t.getAttribute('onclick').includes(`'${id}'`)) t.classList.add('active');
+  });
+  renderAdminSection();
+}
+
+function renderAdminSection() {
+  const body = document.getElementById('admin-body');
+  let html = '';
+  switch(activeTab) {
+    case 'general':
+      html = `
+        <div class="admin-grid-2">
+          <div class="admin-field"><label class="admin-label">Nombre empresa</label><input id="a-empresa" value="${escHtml(DATA.general.empresa)}"></div>
+          <div class="admin-field"><label class="admin-label">Número WhatsApp</label><input id="a-whatsapp" value="${escHtml(DATA.general.whatsapp)}"></div>
+        </div>
+        <div class="admin-grid-2">
+          <div class="admin-field"><label class="admin-label">Email</label><input id="a-email" value="${escHtml(DATA.general.email)}"></div>
+          <div class="admin-field"><label class="admin-label">Teléfono visible</label><input id="a-phone" value="${escHtml(DATA.general.phone)}"></div>
+        </div>
+        <div class="admin-field"><label class="admin-label">Zona de cobertura</label><input id="a-zona" value="${escHtml(DATA.general.zona)}"></div>
+      `;
+      break;
+    case 'hero':
+      html = `
+        <div class="admin-field"><label class="admin-label">Tagline principal</label><input id="a-tagline" value="${escHtml(DATA.hero.tagline)}"></div>
+        <div class="admin-field"><label class="admin-label">Subtítulo</label><textarea id="a-subtitulo">${escHtml(DATA.hero.subtitulo)}</textarea></div>
+        <div class="admin-grid-2">
+          <div class="admin-field"><label class="admin-label">Texto botón WhatsApp</label><input id="a-wa-text" value="${escHtml(DATA.hero.btnWaText)}"></div>
+          <div class="admin-field"><label class="admin-label">Texto botón Email</label><input id="a-email-text" value="${escHtml(DATA.hero.btnEmailText)}"></div>
+        </div>
+      `;
+      break;
+    case 'servicios':
+      html = DATA.servicios.map((s, i) => `
+        <div class="admin-item">
+          <div class="admin-item-header">
+            <span class="admin-item-title">Servicio ${i+1}</span>
+            <button class="admin-remove-btn" onclick="removeItem('servicios', ${i})">✕</button>
+          </div>
+          <div class="admin-field"><label class="admin-label">Título</label><input data-arr="servicios" data-idx="${i}" data-key="titulo" value="${escHtml(s.titulo)}"></div>
+          <div class="admin-field"><label class="admin-label">Descripción</label><textarea data-arr="servicios" data-idx="${i}" data-key="descripcion">${escHtml(s.descripcion)}</textarea></div>
+        </div>
+      `).join('') + `<button class="admin-add-btn" onclick="addItem('servicios')">+ Agregar servicio</button>`;
+      break;
+    case 'stats':
+      html = DATA.stats.map((s, i) => `
+        <div class="admin-item">
+          <div class="admin-item-header"><span class="admin-item-title">Stat ${i+1}</span></div>
+          <div class="admin-grid-2">
+            <div class="admin-field"><label class="admin-label">Número</label><input data-arr="stats" data-idx="${i}" data-key="numero" value="${escHtml(s.numero)}"></div>
+            <div class="admin-field"><label class="admin-label">Label</label><input data-arr="stats" data-idx="${i}" data-key="label" value="${escHtml(s.label)}"></div>
+          </div>
+        </div>
+      `).join('');
+      break;
+    case 'pasos':
+      html = DATA.pasos.map((p, i) => `
+        <div class="admin-item">
+          <div class="admin-item-header"><span class="admin-item-title">Paso ${i+1}</span></div>
+          <div class="admin-field"><label class="admin-label">Título</label><input data-arr="pasos" data-idx="${i}" data-key="titulo" value="${escHtml(p.titulo)}"></div>
+          <div class="admin-field"><label class="admin-label">Descripción</label><textarea data-arr="pasos" data-idx="${i}" data-key="descripcion">${escHtml(p.descripcion)}</textarea></div>
+        </div>
+      `).join('');
+      break;
+    case 'clientes':
+      html = DATA.clientes.map((c, i) => `
+        <div class="admin-item">
+          <div class="admin-item-header">
+            <span class="admin-item-title">Cliente ${i+1}</span>
+            <button class="admin-remove-btn" onclick="removeItem('clientes', ${i})">✕</button>
+          </div>
+          <div class="admin-field"><input data-arr="clientes" data-idx="${i}" data-key="val" value="${escHtml(c)}"></div>
+        </div>
+      `).join('') + `<button class="admin-add-btn" onclick="addItem('clientes')">+ Agregar cliente</button>`;
+      break;
+    case 'testimonios':
+      html = DATA.testimonios.map((t, i) => `
+        <div class="admin-item">
+          <div class="admin-item-header">
+            <span class="admin-item-title">Testimonio ${i+1}</span>
+            <button class="admin-remove-btn" onclick="removeItem('testimonios', ${i})">✕</button>
+          </div>
+          <div class="admin-grid-2">
+            <div class="admin-field"><label class="admin-label">Nombre</label><input data-arr="testimonios" data-idx="${i}" data-key="nombre" value="${escHtml(t.nombre)}"></div>
+            <div class="admin-field"><label class="admin-label">Cargo/Contexto</label><input data-arr="testimonios" data-idx="${i}" data-key="cargo" value="${escHtml(t.cargo)}"></div>
+          </div>
+          <div class="admin-field"><label class="admin-label">Texto</label><textarea data-arr="testimonios" data-idx="${i}" data-key="texto">${escHtml(t.texto)}</textarea></div>
+          <div class="admin-field"><label class="admin-label">Estrellas (1-5)</label><input type="number" min="1" max="5" data-arr="testimonios" data-idx="${i}" data-key="estrellas" value="${t.estrellas}"></div>
+        </div>
+      `).join('') + `<button class="admin-add-btn" onclick="addItem('testimonios')">+ Agregar testimonio</button>`;
+      break;
+    case 'footer':
+      html = `
+        <div class="admin-field"><label class="admin-label">Descripción empresa (footer)</label><textarea id="a-footer-desc">${escHtml(DATA.footer.desc)}</textarea></div>
+        <div class="admin-grid-2">
+          <div class="admin-field"><label class="admin-label">Instagram URL</label><input id="a-instagram" value="${escHtml(DATA.footer.instagram)}"></div>
+          <div class="admin-field"><label class="admin-label">Facebook URL</label><input id="a-facebook" value="${escHtml(DATA.footer.facebook)}"></div>
+        </div>
+        <div class="admin-field"><label class="admin-label">Texto copyright</label><input id="a-copyright" value="${escHtml(DATA.footer.copyright)}"></div>
+      `;
+      break;
+  }
+  body.innerHTML = `<div class="admin-section active">${html}</div>`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function collectAdminInputs() {
+  document.querySelectorAll('[data-arr]').forEach(el => {
+    const arr = el.getAttribute('data-arr');
+    const idx = parseInt(el.getAttribute('data-idx'));
+    const key = el.getAttribute('data-key');
+    const val = el.value;
+    if(arr === 'clientes') {
+      DATA.clientes[idx] = val;
+    } else if(key === 'estrellas') {
+      DATA[arr][idx][key] = parseInt(val) || 5;
+    } else {
+      DATA[arr][idx][key] = val;
+    }
+  });
+}
+
+function saveAdminSection() {
+  switch(activeTab) {
+    case 'general':
+      DATA.general.empresa = document.getElementById('a-empresa')?.value || DATA.general.empresa;
+      DATA.general.whatsapp = document.getElementById('a-whatsapp')?.value || DATA.general.whatsapp;
+      DATA.general.email = document.getElementById('a-email')?.value || DATA.general.email;
+      DATA.general.phone = document.getElementById('a-phone')?.value || DATA.general.phone;
+      DATA.general.zona = document.getElementById('a-zona')?.value || DATA.general.zona;
+      break;
+    case 'hero':
+      DATA.hero.tagline = document.getElementById('a-tagline')?.value || DATA.hero.tagline;
+      DATA.hero.subtitulo = document.getElementById('a-subtitulo')?.value || DATA.hero.subtitulo;
+      DATA.hero.btnWaText = document.getElementById('a-wa-text')?.value || DATA.hero.btnWaText;
+      DATA.hero.btnEmailText = document.getElementById('a-email-text')?.value || DATA.hero.btnEmailText;
+      break;
+    case 'footer':
+      DATA.footer.desc = document.getElementById('a-footer-desc')?.value || DATA.footer.desc;
+      DATA.footer.instagram = document.getElementById('a-instagram')?.value || DATA.footer.instagram;
+      DATA.footer.facebook = document.getElementById('a-facebook')?.value || DATA.footer.facebook;
+      DATA.footer.copyright = document.getElementById('a-copyright')?.value || DATA.footer.copyright;
+      break;
+    default:
+      collectAdminInputs();
+  }
+}
+
+function saveAdminData() {
+  saveAdminSection();
+  saveData(DATA);
+  renderPage();
+  showToast('¡Cambios guardados correctamente!');
+}
+
+function resetToDefaults() {
+  if(confirm('¿Seguro que querés restaurar todos los valores por defecto?')) {
+    DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    localStorage.removeItem('todoaire_data');
+    renderPage();
+    renderAdminSection();
+    showToast('Valores restaurados.');
+  }
+}
+
+function removeItem(arr, idx) {
+  saveAdminSection();
+  if(arr === 'clientes') DATA.clientes.splice(idx, 1);
+  else DATA[arr].splice(idx, 1);
+  renderAdminSection();
+}
+
+function addItem(arr) {
+  saveAdminSection();
+  if(arr === 'servicios') DATA.servicios.push({ titulo: 'Nuevo servicio', descripcion: 'Descripción del servicio.', icono: 'advice' });
+  else if(arr === 'clientes') DATA.clientes.push('Nuevo cliente');
+  else if(arr === 'testimonios') DATA.testimonios.push({ nombre: 'Nombre', cargo: 'Cargo', texto: 'Texto del testimonio.', estrellas: 5 });
+  renderAdminSection();
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if(!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1B2A6B;color:#fff;padding:14px 28px;border-radius:100px;font-weight:600;font-size:15px;z-index:99999;box-shadow:0 8px 32px rgba(27,42,107,0.3);transition:opacity 0.3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 3000);
+}
+
+// ===== INIT =====
+loadData();
+renderPage();
+initReveal();
+</script>
 </body>
 </html>
