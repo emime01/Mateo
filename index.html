@@ -707,8 +707,8 @@ h2{
   position:relative;
   /* base chica + grow: los 5 entran siempre en una fila y se estiran hasta 210px.
      (flex-wrap parte la línea según la base, no encoge para evitarlo) */
-  flex:1 1 88px;
-  max-width:210px;
+  flex:1 1 130px;
+  max-width:250px;
   min-width:0;
   aspect-ratio:3/4;
   border-radius:18px;
@@ -724,41 +724,32 @@ h2{
 }
 .secreto:hover{transform:translateY(-8px) rotate(-.6deg);box-shadow:0 26px 52px rgba(36,30,27,.26)}
 
-/* El cartel se intuye: "RUTA" casi se lee, el resto es ilegible a propósito. */
+/* Nada se lee, a propósito: el desenfoque es fuerte y cada tarjeta lleva un
+   texto distinto, así el borrón no se repite igual en las tres. */
 .secreto__cartel{
-  width:80%;
+  width:78%;
   text-align:center;
-  padding:14% 8%;
+  padding:16% 8%;
   border-radius:8px;
-  background:rgba(255,255,255,.22);
-  box-shadow:0 0 0 3px rgba(255,255,255,.35);
-  filter:blur(3.5px);
+  background:rgba(255,255,255,.2);
+  box-shadow:0 0 0 3px rgba(255,255,255,.3);
+  filter:blur(8px);
   user-select:none;
   -webkit-user-select:none;
 }
-.secreto__cartel .palabra-ruta{
+.secreto__l1{
   display:block;
-  font-size:clamp(.95rem,2.4vw,1.7rem);
+  font-size:clamp(1rem,2.6vw,1.6rem);
   font-weight:900;
-  letter-spacing:.12em;
+  letter-spacing:.06em;
   color:#fff;
 }
-.secreto__cartel .oculto{
+.secreto__l2{
   display:block;
-  margin-top:6px;
-  font-size:clamp(.8rem,1.9vw,1.25rem);
+  margin-top:8px;
+  font-size:clamp(.85rem,2vw,1.2rem);
   font-weight:800;
   color:#FFE9DA;
-  filter:blur(6px);
-}
-.secreto__cartel .barra{
-  display:block;
-  height:5px;
-  margin:10px auto 0;
-  width:64%;
-  border-radius:3px;
-  background:rgba(255,255,255,.8);
-  filter:blur(3px);
 }
 .secreto__grano{  /* ruido para que el borroneo no se "adivine" */
   position:absolute; inset:0;
@@ -769,14 +760,15 @@ h2{
 }
 .secreto__signo{
   position:absolute;
-  top:10px; right:10px;
-  width:26px;height:26px;
-  border-radius:50%;
-  display:grid;place-items:center;
-  background:rgba(255,255,255,.9);
-  color:var(--naranja);
-  font-size:.8rem;
+  inset:0;
+  display:grid;
+  place-items:center;
+  font-size:clamp(2.8rem,7vw,4.6rem);
   font-weight:900;
+  line-height:1;
+  color:#fff;
+  text-shadow:0 8px 26px rgba(36,30,27,.4);
+  pointer-events:none;
 }
 .secreto__prox{
   position:absolute;
@@ -927,7 +919,8 @@ h2{
 }
 
 @media (max-width:560px){
-  .secreto{flex:1 1 calc(50% - 14px);max-width:none}   /* 2 + 2 + 1 centrados */
+  .secreto{flex:1 1 28%}          /* las tres siguen en una sola fila */
+  .secreto__prox{font-size:.48rem;letter-spacing:.12em}
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -1058,12 +1051,12 @@ h2{
     </p>
 
     <div class="pedidos">
-      <p class="pedido rev" style="--i:1">¿Tienen algo en ruta?</p>
-      <p class="pedido rev" style="--i:2">¿Tienen carteles camino a Punta?</p>
-      <p class="pedido rev" style="--i:3">Queremos estar en la ruta toda la temporada.</p>
-      <p class="pedido rev" style="--i:4">Nuestro público se va a la costa en enero.</p>
-      <p class="pedido rev" style="--i:5">Queremos acompañar el viaje, no solo la llegada.</p>
-      <p class="pedido rev" style="--i:6">Buscamos impacto en ruta.</p>
+      <p class="pedido rev" style="--i:1">Che, ¿tienen algo en ruta?</p>
+      <p class="pedido rev" style="--i:2">¿Y camino a Punta no tienen nada?</p>
+      <p class="pedido rev" style="--i:3">Queremos estar toda la temporada.</p>
+      <p class="pedido rev" style="--i:4">En enero mi público se va todo a la costa.</p>
+      <p class="pedido rev" style="--i:5">Los quiero agarrar manejando, no cuando ya llegaron.</p>
+      <p class="pedido rev" style="--i:6">Necesito algo grande, que se vea de lejos.</p>
       <p class="pedido rev" style="--i:7">El cliente pide ruta. ¿Qué tenés?</p>
     </div>
 
@@ -1224,59 +1217,33 @@ h2{
     <div class="secretos">
       <div class="secreto rev" style="--i:1" title="Próximamente">
         <div class="secreto__cartel" aria-hidden="true">
-          <span class="palabra-ruta">RUTA</span>
-          <span class="oculto">■■ ■■■■■</span>
-          <span class="barra"></span>
+          <span class="secreto__l1">Ruta</span>
+          <span class="secreto__l2">■■■■■■</span>
         </div>
         <span class="secreto__grano" aria-hidden="true"></span>
         <span class="secreto__signo" aria-hidden="true">?</span>
         <span class="secreto__prox">Próximamente</span>
       </div>
-
       <div class="secreto rev" style="--i:2" title="Próximamente">
         <div class="secreto__cartel" aria-hidden="true">
-          <span class="palabra-ruta">RUTA</span>
-          <span class="oculto">■■■ ■■</span>
-          <span class="barra"></span>
+          <span class="secreto__l1">Cartel nuevo</span>
+          <span class="secreto__l2">■■■ ■■■■■</span>
         </div>
         <span class="secreto__grano" aria-hidden="true"></span>
         <span class="secreto__signo" aria-hidden="true">?</span>
         <span class="secreto__prox">Próximamente</span>
       </div>
-
       <div class="secreto rev" style="--i:3" title="Próximamente">
         <div class="secreto__cartel" aria-hidden="true">
-          <span class="palabra-ruta">RUTA</span>
-          <span class="oculto">■■■■ ■■■</span>
-          <span class="barra"></span>
-        </div>
-        <span class="secreto__grano" aria-hidden="true"></span>
-        <span class="secreto__signo" aria-hidden="true">?</span>
-        <span class="secreto__prox">Próximamente</span>
-      </div>
-
-      <div class="secreto rev" style="--i:4" title="Próximamente">
-        <div class="secreto__cartel" aria-hidden="true">
-          <span class="palabra-ruta">RUTA</span>
-          <span class="oculto">■■ ■■■</span>
-          <span class="barra"></span>
-        </div>
-        <span class="secreto__grano" aria-hidden="true"></span>
-        <span class="secreto__signo" aria-hidden="true">?</span>
-        <span class="secreto__prox">Próximamente</span>
-      </div>
-
-      <div class="secreto rev" style="--i:5" title="Próximamente">
-        <div class="secreto__cartel" aria-hidden="true">
-          <span class="palabra-ruta">RUTA</span>
-          <span class="oculto">■■■■■ ■</span>
-          <span class="barra"></span>
+          <span class="secreto__l1">Otro tramo</span>
+          <span class="secreto__l2">■■■■■■■ ■■</span>
         </div>
         <span class="secreto__grano" aria-hidden="true"></span>
         <span class="secreto__signo" aria-hidden="true">?</span>
         <span class="secreto__prox">Próximamente</span>
       </div>
     </div>
+
   <div class="seguinos rev" style="--i:6">
     <p class="invitacion">Seguinos en nuestras redes para estar al tanto</p>
 
